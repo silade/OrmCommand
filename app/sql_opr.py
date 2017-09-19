@@ -105,7 +105,7 @@ def get_detail(session, Orm, datas):
     return __oprate_commit(session), result
 
 
-# 获取记录详情
+# 删除记录
 def del_one(session, Orm, datas):
     """
     通用查询数据详情方法
@@ -150,7 +150,11 @@ def get(session, Orm, datas):
     :param datas:{
         "cond": {
             "name": "leas",
-            "des": ""
+            "des": "",
+            "create_time":{
+                "start_time":"2017-09-11 11:56:22",
+                "end_time":"2017-09-11 11:56:22"
+            }
         },
         "sort": {
             "name": True
@@ -171,7 +175,13 @@ def get(session, Orm, datas):
     sql_cond = []
     for key, value in cond.items():
         ret = getattr(Orm, key)
-        sql_cond.append(ret.like('%' + str(value) + '%') if value is not None else "")
+        try:
+            start_time = value['start_time']
+            end_time = value['end_time']
+            sql_cond.append(ret.between(start_time, end_time))
+        except:
+            sql_cond.append(ret.like('%' + str(value) + '%') if value is not None else "")
+
     condition = and_(
         *sql_cond
     )
@@ -192,14 +202,14 @@ def get(session, Orm, datas):
     return __oprate_commit(session), sql_total, result
 
 
+# 联表&多条件查询
+def get_some_table():
+    pass
 
 
 
 
-
-
-
-
+# 数据库session提交回滚操作
 def __oprate_commit(fun):
     try:
         fun.commit()

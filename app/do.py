@@ -24,11 +24,11 @@ session = Session(db_pool)
 ModelBase.metadata.create_all(bind=db_pool)
 
 # 添加
-def add(data):
-    # data = {
-    #     "name": "leason",
-    #     "des": "des",
-    # }
+def add():
+    data = {
+        "name": "leason",
+        "des": 895,
+    }
     result = add_one(session, News, data)
     return result
 
@@ -71,7 +71,11 @@ def get_all():
     data = {
         "cond": {
             "name": "leas",
-            "des": ""
+            "des": "",
+            "create_time": {
+                "start_time": "2017-09-19 11:01:21",
+                "end_time": "2017-09-19 11:01:22"
+            }
         },
         "sort": {
             "name": True
@@ -79,10 +83,13 @@ def get_all():
         "limit": 2,
         "page": 1
     }
-    result = get(session, News, data)
+    state, sql_total, result = get(session, News, data)
+    print state
+    print sql_total
+    print result
 
 if __name__ =='__main__':
-    data = {
-        "id": 10005
-    }
-    modify()
+    # data = {
+    #     "id": 10005
+    # }
+    get_all()
