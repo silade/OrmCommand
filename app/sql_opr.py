@@ -5,9 +5,10 @@
 @time: 2017/9/15 11:12
 """
 from sqlalchemy import and_
-
+from validate import validate
 
 # 插入记录
+@validate
 def add_one(session, Orm, datas):
     """
     通用插入数据方法
@@ -36,6 +37,7 @@ def add_one(session, Orm, datas):
 
 
 # 编辑记录
+@validate
 def modify_one(session, Orm, datas):
     """
     通用编辑方法
@@ -75,6 +77,7 @@ def modify_one(session, Orm, datas):
 
 
 # 获取记录详情
+@validate
 def get_detail(session, Orm, datas):
     """
     通用查询数据详情方法
@@ -106,6 +109,7 @@ def get_detail(session, Orm, datas):
 
 
 # 删除记录
+@validate
 def del_one(session, Orm, datas):
     """
     通用查询数据详情方法
@@ -137,6 +141,7 @@ def del_one(session, Orm, datas):
 
 
 # 单表多条件&&组合查询多条记录
+@validate
 def get(session, Orm, datas):
     """
     通用查询数据详情方法
@@ -207,8 +212,6 @@ def get_some_table():
     pass
 
 
-
-
 # 数据库session提交回滚操作
 def __oprate_commit(fun):
     try:
@@ -218,3 +221,5 @@ def __oprate_commit(fun):
     except:
         fun.rollback()
         return False
+
+
