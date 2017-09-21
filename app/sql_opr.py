@@ -61,7 +61,7 @@ def modify_one(session, Orm, datas):
     :return:True or False, str or dict
     """
     primary_key = datas['primary_key']
-    items =  datas['items']
+    items = datas['items']
     # 获取查询key
     primary_key_key, key_value = primary_key.items()[0]
 
@@ -180,11 +180,11 @@ def get(session, Orm, datas):
     sql_cond = []
     for key, value in cond.items():
         ret = getattr(Orm, key)
-        try:
-            start_time = value['start_time']
-            end_time = value['end_time']
-            sql_cond.append(ret.between(start_time, end_time))
-        except:
+        # 判断是不是时间段条件
+        # 时间段字段key字符串必须包含'time'字符串
+        if isinstance(value, dict) and 'time' in key:
+            sql_cond.append(ret.between(value.values()[0], value.values()[1]))
+        else:
             sql_cond.append(ret.like('%' + str(value) + '%') if value is not None else "")
 
     condition = and_(
