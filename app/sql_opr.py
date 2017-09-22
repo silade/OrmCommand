@@ -7,6 +7,7 @@
 from sqlalchemy import and_
 from validate import validate
 
+
 # 插入记录
 @validate
 def add_one(session, Orm, datas):
@@ -16,7 +17,7 @@ def add_one(session, Orm, datas):
     :param session: 数据库连接
 
     :type Orm: class
-    :param Orm: model类 --该类需要无初始化方法 ，或者无初始化参数
+    :param Orm: model类 --该类需要有构造方法
 
     :type datas: dict
     :param datas:{
@@ -27,10 +28,13 @@ def add_one(session, Orm, datas):
     :rtype: Boolean
     :return:True or False
     """
-    # 实例化model类
-    model = Orm()
-    for key, value in datas.items():
-        setattr(model, key, value)
+    # 兼容Orm有初始化参数和无初始化参数
+    try:
+        model = Orm(**datas)
+    except:
+        model = Orm()
+        for key, value in datas.items():
+            setattr(model, key, value)
 
     session.add(model)
     return __oprate_commit(session)
@@ -45,7 +49,7 @@ def modify_one(session, Orm, datas):
     :param session: 数据库连接
 
     :type Orm: class
-    :param Orm: model类 --该类需要无初始化方法，或者无初始化参数
+    :param Orm: model类 --该类需要有构造方法
 
     :type datas: dict
     :param datas:{
@@ -85,7 +89,7 @@ def get_detail(session, Orm, datas):
     :param session: 数据库连接
 
     :type Orm: class
-    :param Orm: model类 --该类需要无初始化方法，或者无初始化参数
+    :param Orm: model类 --该类需要有构造方法
 
     :type datas: dict
     :param datas:{
@@ -117,7 +121,7 @@ def del_one(session, Orm, datas):
     :param session: 数据库连接
 
     :type Orm: class
-    :param Orm: model类 --该类需要无初始化方法，或者无初始化参数
+    :param Orm: model类 --该类需要有构造方法
 
     :type datas: dict
     :param datas:{
@@ -149,7 +153,7 @@ def get(session, Orm, datas):
     :param session: 数据库连接
 
     :type Orm: class
-    :param Orm: model类 --该类需要无初始化方法，或者无初始化参数
+    :param Orm: model类 --该类需要有构造方法
 
     :type datas: dict
     :param datas:{
