@@ -11,10 +11,12 @@ def validate(func):
         # 校验datas -- dict
         if type(datas) is not dict:
             raise TypeError('datas must be dict')
-        # 校验Orm 需要无构造函数或无构造参数
-        try:
-            Orm()
-        except Exception:
-            raise Exception('Orm must have no __init__() or __init__() needs no arguments')
+        # 校验Orm 需要有构造方法和to_json方法
+        print Orm.__dict__.keys()
+        if 'to_json' in Orm.__dict__.keys() and '__init__' in Orm.__dict__.keys():
+            pass
+        else:
+            raise Exception('Orm must have __init__() and to_json()')
+
         return func(session, Orm, datas)
     return inner
