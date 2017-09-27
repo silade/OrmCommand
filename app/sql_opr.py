@@ -146,7 +146,7 @@ def del_one(session, Orm, datas):
 
 # 单表多条件&&组合查询多条记录
 @validate
-def single_table_list(session, Orm, datas):
+def single_table_list(session, Orm, reuqest):
     """
     通用查询数据详情方法
     :type session:
@@ -155,8 +155,8 @@ def single_table_list(session, Orm, datas):
     :type Orm: class
     :param Orm: model类 --该类需要有构造方法
 
-    :type datas: dict
-    :param datas:{
+    :type reuqest: dict
+    :param reuqest:{
         "cond": {
             "name": "leas",
             "des": "",
@@ -168,6 +168,7 @@ def single_table_list(session, Orm, datas):
         "sort": {
             "name": True
         },
+        "response":["name", "des"]  #需要返回的的数据
         "limit": 2,
         "page": 1
     }
@@ -175,12 +176,15 @@ def single_table_list(session, Orm, datas):
     :rtype: Boolean, Int , list[dict]
     :return:True or False, Int, list[dict]
     """
+    # 返回的list
+    response = reuqest['response']
+
     # 分页
-    limit = datas['limit']
-    offset = (datas['page'] - 1) * datas['limit']
+    limit = reuqest['limit']
+    offset = (reuqest['page'] - 1) * reuqest['limit']
 
     # &&条件
-    cond = datas['cond']
+    cond = reuqest['cond']
     sql_cond = []
     for key, value in cond.items():
         ret = getattr(Orm, key)
@@ -196,7 +200,7 @@ def single_table_list(session, Orm, datas):
     )
 
     # 排序
-    sort = datas['sort']    # key 排序字段  True 降序 False 升序
+    sort = reuqest['sort']    # key 排序字段  True 降序 False 升序
     sort_key, sort_value = sort.items()[0]
     sort_ret = getattr(Orm, sort_key)
     if sort_value:
@@ -207,7 +211,17 @@ def single_table_list(session, Orm, datas):
     )
     sql_content = sql_result.order_by(sort_ret).limit(limit).offset(offset)
     sql_total = sql_result.count()
-    result = [i.to_json() for i in sql_content]
+    # 如果不添加返回字段，返回所有
+    if response:
+        result = []
+        for i in sql_content:
+            c = {}
+            for res_key in response:
+                c[res_key] = getattr(i, res_key)
+            result.append(c)
+    else:
+        result = [i.to_json() for i in sql_content]
+
     return __oprate_commit(session), sql_total, result
 
 
