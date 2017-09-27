@@ -6,6 +6,18 @@
 """
 import datetime
 
+
+# 数据库session提交回滚操作
+def operate_commit(fun):
+    try:
+        fun.commit()
+        fun.close()
+        return True
+    except:
+        fun.rollback()
+        return False
+
+
 # 时间格式化
 def date_time(day_offset=0, seconds_offset=0, microseconds_offset=0, milliseconds_offset=0, minutes_offset=0,
               hours_offset=0, weeks_offset=0, fmt="%Y-%m-%d %H:%M:%S"):
