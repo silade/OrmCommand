@@ -227,7 +227,7 @@ def single_table_list(session, Orm, reuqest):
 
 # 联表&多条件查询 ---> 兼容单表
 # @validate
-def multi_table_list(session, Orms, datas):
+def multi_table_list(session, Orms, reuqest):
     """
     通用联表查询数据详情方法
     :type session:
@@ -236,8 +236,8 @@ def multi_table_list(session, Orms, datas):
     :type Orm: list[class]
     :param Orm: model类 --list[0]主表
 
-    :type datas: dict
-    :param datas:{
+    :type reuqest: dict
+    :param reuqest:{
         "cond": {
             "name": "leas",
             "des": "",
@@ -246,6 +246,11 @@ def multi_table_list(session, Orms, datas):
                 "end_time":"2017-09-11 11:56:22"
             }
         },
+        "response":{
+            "news":["name", "des"],
+            "tag":["tag_name"],
+            "type":["type_name"]
+        },                               #需要返回的的数据
         "sort": {
             "name": True
         },
@@ -256,12 +261,15 @@ def multi_table_list(session, Orms, datas):
     :rtype: Boolean, Int , list[dict]
     :return:True or False, Int, list[dict]
     """
+    # 返回的list
+    response = reuqest['response']
+
     # 分页
-    limit = datas['limit']
-    offset = (datas['page'] - 1) * datas['limit']
+    limit = reuqest['limit']
+    offset = (reuqest['page'] - 1) * reuqest['limit']
 
     # &&条件
-    cond = datas['cond']
+    cond = reuqest['cond']
     sql_cond = []
     Orm = Orms[0]
     for key, value in cond.items():
@@ -278,7 +286,7 @@ def multi_table_list(session, Orms, datas):
     )
 
     # 排序
-    sort = datas['sort']  # key 排序字段  True 降序 False 升序
+    sort = reuqest['sort']  # key 排序字段  True 降序 False 升序
     sort_key, sort_value = sort.items()[0]
     sort_ret = getattr(Orm, sort_key)
     if sort_value:
@@ -295,12 +303,24 @@ def multi_table_list(session, Orms, datas):
             # 多表情况
             c = {}
             for a in i:
-                # 使用表名作为key
-                c[a.__tablename__] = a.to_json()
+                # 判断是否有返回字段
+                if response[a.__tablename__]:
+                    c[a.__tablename__] = {}
+                    for res_key in response[a.__tablename__]:
+                        c[a.__tablename__][res_key] = getattr(a, res_key)
+                else:
+                    # 使用表名作为key
+                    c[a.__tablename__] = a.to_json()
             result.append(c)
         except:
             # 单表情况
-            result.append(i.to_json())
+            if response[i.__tablename__]:
+                c = {}
+                for res_key in response[i.__tablename__]:
+                    c[res_key] = getattr(i, res_key)
+                result.append(c)
+            else:
+                result.append(i.to_json())
     return __oprate_commit(session), sql_total, result
 
 
