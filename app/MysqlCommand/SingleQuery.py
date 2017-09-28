@@ -22,22 +22,16 @@ def single_query_validate(func):
         # 校验cond和sort字段类型为dict 、校验cond和sort里的属性是否存在orm类里
         if not isinstance(data['cond'], dict) or not isinstance(data['sort'], dict):
             raise TypeError('cond and sort must be dict')
-        else:
-            for key_sort, _ in data['sort'].items():
-                if not hasattr(orm, key_sort):
-                    raise AttributeError(orm.__name__ + ' has no attribute "' + key_sort + '"')
-
-            for key_cond, _ in data['cond'].items():
-                if not hasattr(orm, key_cond):
-                    raise AttributeError(orm.__name__ + ' has no attribute "' + key_cond + '"')
 
         # 校验response字段类型为list和校验response里的属性是否存在orm类里
         if not isinstance(data['response'], list):
             raise TypeError('response must be list')
-        else:
-            for key_response in data['response']:
-                if not hasattr(orm, key_response):
-                    raise AttributeError(orm.__name__ + ' has no attribute "' + key_response + '"')
+
+        # 校验所有的key是不是都是orm的属性
+        all_key = [key_sort for key_sort, _ in data['sort'].items()] + [key_cond for key_cond, _ in data['cond'].items()] + [key_response for key_response in data['response']]
+        for key in all_key:
+            if not hasattr(orm, key):
+                raise AttributeError(orm.__name__ + ' has no attribute "' + key + '"')
 
         return func(request, session, orm)
     return inner
