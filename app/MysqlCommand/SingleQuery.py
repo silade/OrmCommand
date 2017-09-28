@@ -13,7 +13,7 @@ def single_query_validate(func):
         data = request.request
         # 校验Orm 需要有构造方法和to_json方法
         if 'to_json' not in orm.__dict__.keys() or '__init__' not in orm.__dict__.keys():
-            raise Exception('Orm must have methods __init__ and to_json')
+            raise Exception(orm.__name__ + ' must have methods __init__ and to_json')
 
         # 校验limit和page字段类型为int
         if not isinstance(data['limit'], int) or not isinstance(data['page'], int):

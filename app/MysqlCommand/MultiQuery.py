@@ -9,8 +9,29 @@ from sqlalchemy import and_
 
 
 def multi_query_validate(func):
-    def inner(request, session, orm):
+    def inner(request, session, *orm):
         data = request.request
+
+        # 校验orm为list 需要有构造方法和to_json方法
+        if not isinstance(orm, tuple):
+            raise TypeError('orm must be tuple')
+        else:
+            for orm_one in orm:
+                if 'to_json' not in orm_one.__dict__.keys() or '__init__' not in orm_one.__dict__.keys():
+                    raise Exception(orm_one.__name__ + ' must have methods __init__ and to_json')
+                else:
+                    # 校验response字段类型为dict和校验response里的属性是否存在orm类里
+                    if not isinstance(data['response'], dict):
+                        raise TypeError('response must be list')
+
+                    # 校验orm和response的长度是否相等
+                    if len(data['response']) is not len(orm):
+                        raise Exception('response and orm must be equal in length')
+
+                    # 校验response字段对应类的属性
+                    for key_response in data['response'][orm_one.__tablename__]:
+                        if not hasattr(orm_one, key_response):
+                            raise AttributeError(orm_one.__name__ + ' has no attribute "' + key_response + '"')
 
         # 校验limit和page字段类型为int
         if not isinstance(data['limit'], int) or not isinstance(data['page'], int):
@@ -20,12 +41,14 @@ def multi_query_validate(func):
         if not isinstance(data['cond'], dict) or not isinstance(data['sort'], dict):
             raise TypeError('cond and sort must be dict')
 
-        # 校验response字段类型为list和校验response里的属性是否存在orm类里
-        if not isinstance(data['response'], dict):
-            raise TypeError('response must be list')
+        # 校验所有的key是不是都是orm的属性
+        all_key = [key_sort for key_sort, _ in data['sort'].items()] + [key_cond for key_cond, _ in
+                                                                        data['cond'].items()]
+        for key in all_key:
+            if not hasattr(orm[0], key):
+                raise AttributeError(orm[0].__name__ + ' has no attribute "' + key + '"')
 
-
-        return func(request, session, orm)
+        return func(request, session, *orm)
     return inner
 
 
@@ -43,7 +66,7 @@ class MultiQuery:
         self.request['page'] = page
 
     @multi_query_validate
-    def query_method(self, session, orm):
+    def query_method(self, session, *orm):
         """
         通用联表查询数据详情方法
         :type session:

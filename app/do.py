@@ -8,9 +8,12 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from sqlalchemy.pool import QueuePool
-from models import News, Type, Tag
+
+from app.MysqlCommand.SingleQuery import SingleQuery
+from app.MysqlCommand.MultiQuery import MultiQuery
 from models import ModelBase
-from sql_opr import add_one, get_detail, del_one, single_table_list, modify_one, multi_table_list
+from models import News, Type, Tag
+from sql_opr import add_one, get_detail, del_one, modify_one, multi_table_list
 
 mysql_pool_configs = {
     "url": "mysql+pymysql://root:@127.0.0.1:3306/test?charset=utf8",
@@ -68,7 +71,7 @@ def delete_one(data):
 
 # 获取
 def get_all():
-    data = {
+    request = {
         "cond": {
             "name": "",
             "des": "",
@@ -83,7 +86,10 @@ def get_all():
         "limit": 2,
         "page": 1
     }
-    state, sql_total, result = single_table_list(session, News, data)
+    response = ["name"]
+    request['response'] = ['name', 'des']
+    # state, sql_total, result = single_table_list(session, News, request)
+    state, sql_total, result = SingleQuery(cond=request['cond'], sort=request['sort'], response=request['response'], limit=10, page=1).query_method(session, News)
     print state
     print sql_total
     print result
@@ -91,7 +97,7 @@ def get_all():
 
 # 获取
 def get_some_table_all():
-    data = {
+    request = {
         "cond": {
             "name": "leas",
             "des": "",
@@ -103,12 +109,16 @@ def get_some_table_all():
         "sort": {
             "name": True
         },
+        "response": {
+            "news": ["name", "des"],
+            "tag": ["tag_name"],
+            "type": ["type_name"]
+        },
         "limit": 2,
         "page": 1
     }
     orms = [News, Type, Tag]
-
-    state, sql_total, result = multi_table_list(session, orms, data)
+    state, sql_total, result = MultiQuery(cond=request['cond'], sort=request['sort'], response=request['response'], limit=10, page=1).query_method(session, News, Type, Tag)
     print state
     print sql_total
     print result
@@ -118,4 +128,5 @@ if __name__ =='__main__':
     #     "id": 10005
     # }
     # add()
+    # get_all()
     get_some_table_all()
