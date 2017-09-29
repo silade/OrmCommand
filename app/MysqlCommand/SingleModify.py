@@ -18,7 +18,11 @@ def single_modify_validate(func):
         if not isinstance(data, dict):
             raise TypeError('data must be dict')
         else:
-            pass
+            # 校验所有的key是不是都是orm的属性
+            all_key = [primary_key for primary_key, _ in data['primary_key'].items()] + [key_item for key_item, _ in data['items'].items()]
+            for key in all_key:
+                if not hasattr(orm, key):
+                    raise AttributeError(orm.__name__ + ' has no attribute "' + key + '"')
 
         return func(request, session, orm)
     return inner
@@ -29,8 +33,9 @@ class SingleModify:
 
     }
 
-    def __init__(self, data):
-        self.request = data
+    def __init__(self, primary_key, items):
+        self.request['primary_key'] = primary_key
+        self.request['items'] = items
 
     @single_modify_validate
     def modify_method(self, session, orm):
