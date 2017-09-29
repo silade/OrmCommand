@@ -4,8 +4,9 @@
 @author: leason
 @time: 2017/9/28 9:33
 """
-from app.untils import operate_commit
 from sqlalchemy import and_
+
+from app.MysqlCommand.Untils.untils import operate_commit
 
 
 def multi_query_validate(func):

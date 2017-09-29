@@ -5,7 +5,8 @@
 @time: 2017/9/15 11:12
 """
 from sqlalchemy import and_
-from validate import validate
+
+from app.MysqlCommand.Validate.validate import validate
 
 
 # 插入记录

@@ -4,9 +4,11 @@
 @author: leason
 @time: 2017/9/8 14:09
 """
-from untils import date_time
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
+
+from app.MysqlCommand.Untils.untils import date_time
+
 ModelBase = declarative_base()
 
 

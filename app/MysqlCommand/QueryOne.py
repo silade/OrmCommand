@@ -4,7 +4,7 @@
 @author: leason
 @time: 2017/9/29 16:11
 """
-from app.untils import operate_commit
+from app.MysqlCommand.Untils.untils import operate_commit
 
 
 def query_one_validate(func):

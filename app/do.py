@@ -11,6 +11,10 @@ from sqlalchemy.pool import QueuePool
 
 from app.MysqlCommand.SingleQuery import SingleQuery
 from app.MysqlCommand.MultiQuery import MultiQuery
+from app.MysqlCommand.SingleInsert import SingleInsert
+from app.MysqlCommand.SingleModify import SingleModify
+from app.MysqlCommand.DeleteOne import DeleteOne
+from app.MysqlCommand.QueryOne import QueryOne
 from models import ModelBase
 from models import News, Type, Tag
 from sql_opr import add_one, get_detail, del_one, modify_one, multi_table_list
@@ -29,10 +33,10 @@ ModelBase.metadata.create_all(bind=db_pool)
 # 添加
 def add():
     data = {
-        "name": "leason",
+        "name": "leason1",
         "des": 123,
     }
-    result = add_one(session, News, data)
+    result = SingleInsert(data).add_method(session, News)
     return result
 
 
@@ -40,37 +44,45 @@ def add():
 def modify():
     data = {
         "primary_key": {
-            "id": 10002
+            "id": 10002,
+            "name": 10002
         },
         "items": {
             "name": "llx",
             "des": 845
         }
     }
-    result = modify_one(session, News, data)
+    result = SingleModify(data['primary_key'], data['items']).modify_method(session, News)
     print result
     return result
 
 
-# 查询
-def get_one(data):
-    # data = {
-    #     "id": 10005
-    # }
-    result, info = get_detail(session, News, data)
+# 查询详情
+def get_one():
+    data = {
+        "id": 10005
+    }
+
+    response = ["name", "des"]
+
+    result, info = QueryOne(data, response).query_method(session, News)
+    print info
     return result, info
 
+
 # 删除
-def delete_one(data):
-    # data = {
-    #     "id": 10005
-    # }
-    result = del_one(session, News, data)
+def delete_one():
+    data = {
+        "id": 10001
+    }
+    result = DeleteOne(data).delete_method(session, News)
     print result
     return result
+
 
 # 获取
 def get_all():
+
     request = {
         "cond": {
             "name": "",
@@ -86,9 +98,9 @@ def get_all():
         "limit": 2,
         "page": 1
     }
+
     response = ["name"]
     request['response'] = ['name', 'des']
-    # state, sql_total, result = single_table_list(session, News, request)
     state, sql_total, result = SingleQuery(cond=request['cond'], sort=request['sort'], response=request['response'], limit=10, page=1).query_method(session, News)
     print state
     print sql_total
@@ -117,7 +129,7 @@ def get_some_table_all():
         "limit": 2,
         "page": 1
     }
-    orms = [News, Type, Tag]
+
     state, sql_total, result = MultiQuery(cond=request['cond'], sort=request['sort'], response=request['response'], limit=10, page=1).query_method(session, News, Type, Tag)
     print state
     print sql_total
@@ -129,4 +141,7 @@ if __name__ =='__main__':
     # }
     # add()
     # get_all()
-    get_some_table_all()
+    # get_some_table_all()
+    # modify()
+    # get_one()
+    delete_one()
