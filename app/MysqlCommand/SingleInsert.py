@@ -10,7 +10,6 @@ from app.untils import operate_commit
 def single_insert_validate(func):
     def inner(request, session, orm):
         data = request.request
-        print data
         # 校验Orm 需要有构造方法和to_json方法
         if 'to_json' not in orm.__dict__.keys() or '__init__' not in orm.__dict__.keys():
             raise Exception(orm.__name__ + ' must have methods __init__ and to_json')
@@ -35,6 +34,7 @@ class SingleInsert:
     def __init__(self, data):
         self.request = data
 
+    @single_insert_validate
     def add_method(self, session, orm):
         """
         通用插入数据方法
