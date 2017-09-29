@@ -7,7 +7,7 @@
 from flask import Flask
 from flask_cors import CORS
 
-from app.do import add
+from app.example import add
 
 app = Flask(__name__)
 
