@@ -17,7 +17,6 @@ from app.MysqlCommand.DeleteOne import DeleteOne
 from app.MysqlCommand.QueryOne import QueryOne
 from models import ModelBase
 from models import News, Type, Tag
-from sql_opr import add_one, get_detail, del_one, modify_one, multi_table_list
 
 mysql_pool_configs = {
     "url": "mysql+pymysql://root:@127.0.0.1:3306/test?charset=utf8",
@@ -29,6 +28,7 @@ db_pool = create_engine(mysql_pool_configs['url'], poolclass=QueuePool, echo=Tru
 session = Session(db_pool)
 
 ModelBase.metadata.create_all(bind=db_pool)
+
 
 # 添加
 def add():
