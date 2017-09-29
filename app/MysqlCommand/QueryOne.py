@@ -7,6 +7,28 @@
 from app.untils import operate_commit
 
 
+def query_one_validate(func):
+    def inner(request, session, orm):
+        data = request.request
+        # 校验Orm 需要有构造方法和to_json方法
+        if 'to_json' not in orm.__dict__.keys() or '__init__' not in orm.__dict__.keys():
+            raise Exception(orm.__name__ + ' must have methods __init__ and to_json')
+
+        # 校验data字段类型为dict并且orm有字段内属性
+        if not isinstance(data, dict):
+            raise TypeError('data must be dict')
+        else:
+            # 校验所有的key是不是都是orm的属性
+            all_key = [primary_key for primary_key, _ in data['primary_key'].items()] + [key_res for key_res in
+                                                                                         data['response']]
+            for key in all_key:
+                if not hasattr(orm, key):
+                    raise AttributeError(orm.__name__ + ' has no attribute "' + key + '"')
+
+        return func(request, session, orm)
+    return inner
+
+
 class QueryOne:
 
     request = {}
@@ -16,6 +38,7 @@ class QueryOne:
         self.request['primary_key'] = primary_key
         self.request['response'] = response
 
+    @query_one_validate
     def query_method(self, session, orm):
         """
         通用查询数据详情方法
@@ -53,6 +76,9 @@ class QueryOne:
             else:
                 # 返回所有
                 result = result_content.to_json()
+            state = operate_commit(session)
         else:
+            operate_commit(session)
             result = 'record is not exited'
-        return operate_commit(session), result
+            state = False
+        return state, result
