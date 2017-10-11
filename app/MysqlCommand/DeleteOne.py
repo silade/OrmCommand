@@ -4,7 +4,7 @@
 @author: leason
 @time: 2017/9/29 16:51
 """
-from app.MysqlCommand.Untils.untils import operate_commit
+from Untils.untils import operate_commit
 
 
 def delete_one_validate(func):
@@ -21,7 +21,7 @@ def delete_one_validate(func):
             # 校验所有的key是不是都是orm的属性
             key, value = data.items()[0]
             if not hasattr(orm, key):
-                    raise AttributeError(orm.__name__ + ' has no attribute "' + key + '"')
+                raise AttributeError(orm.__name__ + ' has no attribute "' + key + '"')
 
         return func(request, session, orm)
     return inner

@@ -4,7 +4,7 @@
 @author: leason
 @time: 2017/9/28 17:42
 """
-from app.MysqlCommand.Untils.untils import operate_commit
+from Untils.untils import operate_commit
 
 
 def single_insert_validate(func):

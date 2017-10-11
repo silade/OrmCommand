@@ -6,7 +6,7 @@
 """
 from sqlalchemy import and_
 
-from app.MysqlCommand.Untils.untils import operate_commit
+from Untils.untils import operate_commit
 
 
 def multi_query_validate(func):
