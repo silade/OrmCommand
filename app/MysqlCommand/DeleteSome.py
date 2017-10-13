@@ -2,12 +2,12 @@
 # encoding: utf-8
 """
 @author: leason
-@time: 2017/9/29 16:51
+@time: 2017/10/13 15:56
 """
 from Untils.untils import operate_commit
 
 
-def delete_one_validate(func):
+def delete_some_validate(func):
     def inner(request, session, orm):
         data = request.request
         # 校验Orm 需要有构造方法和to_json方法
@@ -23,11 +23,15 @@ def delete_one_validate(func):
             if not hasattr(orm, key):
                 raise AttributeError(orm.__name__ + ' has no attribute "' + key + '"')
 
+            # 校验所有的id值是list
+            if not isinstance(value, list):
+                raise TypeError('primary_key\'s value must be list')
+
         return func(request, session, orm)
     return inner
 
 
-class DeleteOne:
+class DeleteSome:
     request = {
 
     }
@@ -35,10 +39,10 @@ class DeleteOne:
     def __init__(self, primary_key):
         self.request = primary_key
 
-    @delete_one_validate
+    @delete_some_validate
     def delete_method(self, session, orm):
         """
-        通用删除数据方法
+        通用删除多条数据方法
         :type session:
         :param session: 数据库连接
 
@@ -47,7 +51,7 @@ class DeleteOne:
 
         :type datas: dict
         :param datas:{
-            "user_id":6156161
+            "user_id":['123','321']
         }
 
         :rtype: Boolean, str or dict
@@ -58,11 +62,12 @@ class DeleteOne:
 
         ret = getattr(orm, key)
 
-        sql_result = session.query(orm).filter(ret == value)
-        if sql_result.count() is 1:
-            session.delete(sql_result.one())
-            result = operate_commit(session)
-        else:
-            operate_commit(session)
-            result = 'record is not exited'
+        for i in value:
+            sql_result = session.query(orm).filter(ret == i)
+            if sql_result.count() is 1:
+                session.delete(sql_result.one())
+            else:
+                session.close()
+                return 'record is not exited'
+        result = operate_commit(session)
         return result
