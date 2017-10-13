@@ -8,13 +8,8 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from sqlalchemy.pool import QueuePool
+from MysqlCommand import SingleQuery, MultiQuery, SingleInsert,SingleModify, DeleteOne, DeleteSome, QueryOne
 
-from app.MysqlCommand.SingleQuery import SingleQuery
-from app.MysqlCommand.MultiQuery import MultiQuery
-from app.MysqlCommand.SingleInsert import SingleInsert
-from app.MysqlCommand.SingleModify import SingleModify
-from app.MysqlCommand.DeleteOne import DeleteOne
-from app.MysqlCommand.QueryOne import QueryOne
 from models import ModelBase
 from models import News, Type, Tag
 
