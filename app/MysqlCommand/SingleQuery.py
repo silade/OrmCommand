@@ -44,7 +44,7 @@ class SingleQuery:
 
     }
 
-    def __init__(self, cond, sort, response, limit=10, page=1):
+    def __init__(self, cond, sort, response, limit=0, page=1):
         self.request['cond'] = cond
         self.request['sort'] = sort
         self.request['response'] = response
@@ -116,7 +116,11 @@ class SingleQuery:
         sql_result = session.query(orm).filter(
             condition
         )
-        sql_content = sql_result.order_by(sort_ret).limit(limit).offset(offset)
+        # 0为False
+        if limit:
+            sql_content = sql_result.order_by(sort_ret).limit(limit).offset(offset)
+        else:
+            sql_content = sql_result.order_by(sort_ret)
         sql_total = sql_result.count()
         # 如果不添加返回字段，返回所有
         if response:
