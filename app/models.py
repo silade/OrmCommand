@@ -23,7 +23,7 @@ class News(ModelBase):
     tag_id = Column(Integer, ForeignKey('tag.id', ondelete='CASCADE', onupdate='CASCADE'))
     name = Column(String(length=50))
     des = Column(Integer)
-    create_time = Column(DateTime,  default=date_time())
+    create_time = Column(String(length=50),  default=date_time())
 
     def __init__(self, name, des, type_id=None, tag_id=None):
         self.name = name

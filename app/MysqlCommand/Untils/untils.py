@@ -13,7 +13,7 @@ def operate_commit(fun):
         fun.commit()
         fun.close()
         return True
-    except:
+    except Exception as e:
         fun.rollback()
         return False
 

@@ -12,13 +12,11 @@ from ..MysqlCommand import SingleQuery, MultiQuery, SingleInsert,SingleModify, D
 from ..models import ModelBase
 from ..models import News, Type, Tag
 
-mysql_pool_configs = {
-    "url": "mysql+pymysql://root:@127.0.0.1:3306/test?charset=utf8",
-    "pool_timeout": 5
-}
+# mysql_pool_configs = {
+#     "url": "sqlite://"
+# }
 
-db_pool = create_engine(mysql_pool_configs['url'], poolclass=QueuePool, echo=True)
+db = create_engine("sqlite:///:memory:", echo=True)
 
-session = Session(db_pool)
+session = Session(db)
 
-ModelBase.metadata.create_all(bind=db_pool)
