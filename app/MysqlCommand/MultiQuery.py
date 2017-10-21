@@ -59,7 +59,7 @@ class MultiQuery:
 
     }
 
-    def __init__(self, cond, sort, response, limit=10, page=1):
+    def __init__(self, cond,  response=[], sort={}, limit=0, page=1):
         self.request['cond'] = cond
         self.request['sort'] = sort
         self.request['response'] = response
@@ -128,15 +128,22 @@ class MultiQuery:
 
         # 排序
         sort = request['sort']  # key 排序字段  True 降序 False 升序
-        sort_key, sort_value = sort.items()[0]
-        sort_ret = getattr(main_orm, sort_key)
-        if sort_value:
-            sort_ret = sort_ret.desc()
+        if sort:
+            sort_key, sort_value = sort.items()[0]
+            sort_ret = getattr(main_orm, sort_key)
+            if sort_value:
+                sort_ret = sort_ret.desc()
+        else:
+            sort_ret = None
         # 联表
         sql_result = session.query(*orm).join(*orm[1:], isouter=True).filter(
             condition
         )
-        sql_content = sql_result.order_by(sort_ret).limit(limit).offset(offset)
+        # 0为False
+        if limit:
+            sql_content = sql_result.order_by(sort_ret).limit(limit).offset(offset)
+        else:
+            sql_content = sql_result.order_by(sort_ret)
         sql_total = sql_result.count()
         result = []
         for i in sql_content:

@@ -44,7 +44,7 @@ class SingleQuery:
 
     }
 
-    def __init__(self, cond, sort, response, limit=0, page=1):
+    def __init__(self, cond, sort={}, response=[], limit=0, page=1):
         self.request['cond'] = cond
         self.request['sort'] = sort
         self.request['response'] = response
@@ -108,10 +108,13 @@ class SingleQuery:
 
         # 排序
         sort = request['sort']  # key 排序字段  True 降序 False 升序
-        sort_key, sort_value = sort.items()[0]
-        sort_ret = getattr(orm, sort_key)
-        if sort_value:
-            sort_ret = sort_ret.desc()
+        if sort:
+            sort_key, sort_value = sort.items()[0]
+            sort_ret = getattr(orm, sort_key)
+            if sort_value:
+                sort_ret = sort_ret.desc()
+        else:
+            sort_ret = None
 
         sql_result = session.query(orm).filter(
             condition
