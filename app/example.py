@@ -31,7 +31,12 @@ def add():
         "name": "leason1",
         "des": 123,
     }
-    result = SingleInsert(data).add_method(session, News)
+    type_add = {
+        "type_name": "15161"
+    }
+    # result = SingleInsert(data).add_method(session, News)
+    result = SingleInsert(type_add).add_method(session, Type)
+    print result
     return result
 
 
@@ -134,9 +139,9 @@ if __name__ =='__main__':
     # data = {
     #     "id": 10005
     # }
-    # add()
+    add()
     # get_all()
     # get_some_table_all()
     # modify()
     # get_one()
-    delete_one()
+    # delete_one()

@@ -59,7 +59,7 @@ class MultiQuery:
 
     }
 
-    def __init__(self, cond,  response=[], sort={}, limit=0, page=1):
+    def __init__(self, cond,  response, sort={}, limit=0, page=1):
         self.request['cond'] = cond
         self.request['sort'] = sort
         self.request['response'] = response
@@ -151,14 +151,15 @@ class MultiQuery:
                 # 多表情况
                 c = {}
                 for a in i:
-                    # 判断是否有返回字段
-                    if response[a.__tablename__]:
-                        c[a.__tablename__] = {}
-                        for res_key in response[a.__tablename__]:
-                            c[a.__tablename__][res_key] = getattr(a, res_key)
-                    else:
-                        # 使用表名作为key
-                        c[a.__tablename__] = a.to_json()
+                    if a:
+                        # 判断是否有返回字段
+                        if response[a.__tablename__]:
+                            c[a.__tablename__] = {}
+                            for res_key in response[a.__tablename__]:
+                                c[a.__tablename__][res_key] = getattr(a, res_key)
+                        else:
+                            # 使用表名作为key
+                            c[a.__tablename__] = a.to_json()
                 result.append(c)
             except:
                 # 单表情况

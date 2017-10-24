@@ -18,7 +18,9 @@ class News(ModelBase):
         'mysql_auto_increment': '10001'
     }
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(Integer, primary_key=True)
+    # type_id = Column(Integer)
+    # tag_id = Column(Integer)
     type_id = Column(Integer, ForeignKey('type.id', ondelete='CASCADE', onupdate='CASCADE'))
     tag_id = Column(Integer, ForeignKey('tag.id', ondelete='CASCADE', onupdate='CASCADE'))
     name = Column(String(length=50))
@@ -52,9 +54,9 @@ class Type(ModelBase):
         'mysql_auto_increment': '10001'
     }
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(Integer, primary_key=True)
     type_name = Column(String(length=50))
-    create_time = Column(DateTime, default=date_time())
+    create_time = Column(String(length=50), default=date_time())
 
     def __init__(self, type_name=0):
         self.type_name = type_name
@@ -77,9 +79,9 @@ class Tag(ModelBase):
         'mysql_auto_increment': '10001'
     }
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(Integer, primary_key=True)
     tag_name = Column(String(length=50))
-    create_time = Column(DateTime, default=date_time())
+    create_time = Column(String(length=50), default=date_time())
 
     def __init__(self, tag_name=0):
         self.tag_name = tag_name
