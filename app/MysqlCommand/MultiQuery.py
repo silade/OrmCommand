@@ -119,6 +119,9 @@ class MultiQuery:
             # 时间段字段key字符串必须包含'time'字符串
             if isinstance(value, dict) and 'time' in key:
                 sql_cond.append(ret.between(value.values()[0], value.values()[1]))
+            # 当value类型为list时添加in条件
+            elif isinstance(value, list):
+                sql_cond.append(ret.in_(value))
             else:
                 sql_cond.append(ret.like('%' + str(value) + '%') if value is not None else "")
 
