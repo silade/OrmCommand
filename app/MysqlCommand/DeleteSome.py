@@ -4,7 +4,7 @@
 @author: leason
 @time: 2017/10/13 15:56
 """
-from Untils.untils import operate_commit
+from Utils.utils import operate_commit
 
 
 def delete_some_validate(func):

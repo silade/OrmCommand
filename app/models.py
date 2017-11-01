@@ -7,7 +7,7 @@
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 
-from app.MysqlCommand.Untils.untils import date_time
+from app.MysqlCommand.Utils.utils import date_time
 
 ModelBase = declarative_base()
 
