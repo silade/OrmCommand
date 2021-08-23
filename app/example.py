@@ -8,10 +8,9 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from sqlalchemy.pool import QueuePool
-from MysqlCommand import SingleQuery, MultiQuery, SingleInsert,SingleModify, DeleteOne, DeleteSome, QueryOne
-
-from models import ModelBase
-from models import News, Type, Tag
+from app.MysqlCommand import SingleQuery, MultiQuery, SingleInsert,SingleModify, DeleteOne, DeleteSome, QueryOne
+from app.models import ModelBase
+from app.models import News, Type, Tag
 
 mysql_pool_configs = {
     "url": "mysql+pymysql://root:@127.0.0.1:3306/test?charset=utf8",
@@ -19,9 +18,7 @@ mysql_pool_configs = {
 }
 
 db_pool = create_engine(mysql_pool_configs['url'], poolclass=QueuePool, echo=True)
-
 session = Session(db_pool)
-
 ModelBase.metadata.create_all(bind=db_pool)
 
 
@@ -36,7 +33,7 @@ def add():
     }
     # result = SingleInsert(data).add_method(session, News)
     result = SingleInsert(type_add).add_method(session, Type)
-    print result
+    print(result)
     return result
 
 
@@ -53,7 +50,7 @@ def modify():
         }
     }
     result = SingleModify(data['primary_key'], data['items']).modify_method(session, News)
-    print result
+    print(result)
     return result
 
 
@@ -66,7 +63,7 @@ def get_one():
     response = ["name", "des"]
 
     result, info = QueryOne(data, response).query_method(session, News)
-    print info
+    print(info)
     return result, info
 
 
@@ -76,7 +73,7 @@ def delete_one():
         "id": 10001
     }
     result = DeleteOne(data).delete_method(session, News)
-    print result
+    print(result)
     return result
 
 
@@ -102,9 +99,9 @@ def get_all():
     response = ["name"]
     request['response'] = ['name', 'des']
     state, sql_total, result = SingleQuery(cond=request['cond'], sort=request['sort'], response=request['response'], limit=10, page=1).query_method(session, News)
-    print state
-    print sql_total
-    print result
+    print(state)
+    print(sql_total)
+    print(result)
 
 
 # 获取
@@ -131,9 +128,9 @@ def get_some_table_all():
     }
 
     state, sql_total, result = MultiQuery(cond=request['cond'], sort=request['sort'], response=request['response'], limit=10, page=1).query_method(session, News, Type, Tag)
-    print state
-    print sql_total
-    print result
+    print(state)
+    print(sql_total)
+    print(result)
 
 if __name__ =='__main__':
     # data = {

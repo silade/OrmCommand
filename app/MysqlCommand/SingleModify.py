@@ -4,7 +4,7 @@
 @author: leason
 @time: 2017/9/29 9:43
 """
-from Utils.utils import operate_commit
+from app.MysqlCommand.Utils.utils import operate_commit
 
 
 def single_modify_validate(func):

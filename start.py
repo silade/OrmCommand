@@ -22,7 +22,7 @@ def test():
         "des": "des",
     }
     result = add(data)
-    print result
+    print(result)
     return 'ok'
 
 

@@ -6,7 +6,7 @@
 """
 from sqlalchemy import and_
 
-from Utils.utils import operate_commit
+from app.MysqlCommand.Utils.utils import operate_commit
 
 
 def single_query_validate(func):
